@@ -4,11 +4,23 @@ dependencies:
   clipanion:
     specifier: 4.0.0-rc.2
     version: 4.0.0-rc.2(typanion@3.14.0)
+  prompts:
+    specifier: ^2.4.2
+    version: 2.4.2
+  turndown:
+    specifier: ^7.1.2
+    version: 7.1.2
 
 devDependencies:
   '@types/node':
     specifier: ^20.10.2
     version: 20.10.2
+  '@types/prompts':
+    specifier: ^2.4.9
+    version: 2.4.9
+  '@types/turndown':
+    specifier: ^5.0.4
+    version: 5.0.4
   tsx:
     specifier: ^4.6.2
     version: 4.6.2
@@ -222,12 +234,27 @@ packages:
       undici-types: 5.26.5
     dev: true
 
+  /@types/prompts@2.4.9:
+    resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
+    dependencies:
+      '@types/node': 20.10.2
+      kleur: 3.0.3
+    dev: true
+
+  /@types/turndown@5.0.4:
+    resolution: {integrity: sha512-28GI33lCCkU4SGH1GvjDhFgOVr+Tym4PXGBIU1buJUa6xQolniPArtUT+kv42RR2N9MsMLInkr904Aq+ESHBJg==}
+    dev: true
+
   /clipanion@4.0.0-rc.2(typanion@3.14.0):
     resolution: {integrity: sha512-0IXugyri0bQs6/JLS9Uoh9xZ4kiDyFf6gAoikefPW/yHJZbS4We4jjx5HZPU/xfRjILSzZld9Q9P3JBJe6irUA==}
     peerDependencies:
       typanion: '*'
     dependencies:
       typanion: 3.14.0
+    dev: false
+
+  /domino@2.1.6:
+    resolution: {integrity: sha512-3VdM/SXBZX2omc9JF9nOPCtDaYQ67BGp5CoLpIQlO2KCAPETs8TcDHacF26jXadGbvUteZzRTeos2fhID5+ucQ==}
     dev: false
 
   /esbuild@0.18.20:
@@ -274,9 +301,25 @@ packages:
       resolve-pkg-maps: 1.0.0
     dev: true
 
+  /kleur@3.0.3:
+    resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
+    engines: {node: '>=6'}
+
+  /prompts@2.4.2:
+    resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
+    engines: {node: '>= 6'}
+    dependencies:
+      kleur: 3.0.3
+      sisteransi: 1.0.5
+    dev: false
+
   /resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
     dev: true
+
+  /sisteransi@1.0.5:
+    resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+    dev: false
 
   /tsx@4.6.2:
     resolution: {integrity: sha512-QPpBdJo+ZDtqZgAnq86iY/PD2KYCUPSUGIunHdGwyII99GKH+f3z3FZ8XNFLSGQIA4I365ui8wnQpl8OKLqcsg==}
@@ -288,6 +331,12 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
+
+  /turndown@7.1.2:
+    resolution: {integrity: sha512-ntI9R7fcUKjqBP6QU8rBK2Ehyt8LAzt3UBT9JR9tgo6GtuKvyUzpayWmeMKJw1DPdXzktvtIT8m2mVXz+bL/Qg==}
+    dependencies:
+      domino: 2.1.6
+    dev: false
 
   /typanion@3.14.0:
     resolution: {integrity: sha512-ZW/lVMRabETuYCd9O9ZvMhAh8GslSqaUjxmK/JLPCh6l73CvLBiuXswj/+7LdnWOgYsQ130FqLzFz5aGT4I3Ug==}

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { runExit } from "clipanion";
 
-import { StartCommand } from "./commands/start";
+import { Init } from "./commands/init";
+import { Fetch } from "./commands/fetch";
 
-runExit([StartCommand]);
+runExit([Init, Fetch]);
