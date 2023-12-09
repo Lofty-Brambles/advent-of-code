@@ -23,7 +23,6 @@ export class Test extends Command {
     const { year, day } = validateTime(this.date);
     const currentPath = resolve("./");
     const solutionFile = join(currentPath, year, day, FILENAMES.SOLUTION_FILE);
-    console.log(solutionFile);
     if (!existsSync(solutionFile))
       throw new Error(`The solution file does not exist for ${year}/${day}!`);
 
