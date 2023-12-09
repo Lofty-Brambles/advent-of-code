@@ -12,3 +12,6 @@
 [_] Refactor submit with the exectuable body to get rid of massive if chains
 [_] Fix the @ts-ignored shebang with kfs.default imports
 [_] Add a JS template for people doing it in JS
+[_] Add a feedback system in files on completion
+[_] Actually add proper readmes
+[_] Add licenses
