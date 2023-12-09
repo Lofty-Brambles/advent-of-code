@@ -8,7 +8,15 @@ const input = rawInput.trim().split("\n");
 const test = rawTest.trim().split("\n");
 
 const problem1 = (contents: string[]) => {
-  return undefined;
+  const findNumber = (element: string) => {
+    const allDigits = Array.from({ length: 10 }, (_, index) => index);
+    const confirmDigit = (value: string) => allDigits.includes(+value);
+    const leftNumber = element.split("").find(confirmDigit);
+    const rightNumber = element.split("").findLast(confirmDigit);
+    return +`${leftNumber}${rightNumber}`;
+  };
+
+  return contents.reduce((previous, now) => previous + findNumber(now), 0);
 };
 
 const problem2 = (contents: string[]) => {

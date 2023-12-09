@@ -1,4 +1,4 @@
-import TurndownService from "turndown";
+import { NodeHtmlMarkdown } from "node-html-markdown";
 
 import { DEFAULT_DAY, DEFAULT_YEAR, YEARS, ARTICLE_REGEX } from "./constants";
 
@@ -32,9 +32,13 @@ export const validateTime = (dateString: string | undefined) => {
   };
 };
 
-export const getQuestion = async (year: string, rawDay: string) => {
+export const getQuestion = async (
+  year: string,
+  rawDay: string,
+  key: string
+) => {
   const URL = `https://adventofcode.com/${year}/day/${rawDay}`;
-  const response = await fetch(URL);
+  const response = await fetch(URL, { headers: { cookie: `session=${key}` } });
   const responseText = await response.text();
 
   if (response.status === 200) return responseText;
@@ -55,7 +59,11 @@ export const getInput = async (year: string, rawDay: string, key: string) => {
 
 export const processQuestion = (contents: string) => {
   const questionInHtml = contents.match(ARTICLE_REGEX)![0];
-  const turndown = new TurndownService();
-  return `---------------------------
-# ${turndown.turndown(questionInHtml).slice(1)}`;
+  const converter = new NodeHtmlMarkdown({
+    bulletMarker: "-",
+    codeBlockStyle: "indented",
+    emDelimiter: "*",
+    textReplace: [[/\\-/gi, "-"]],
+  });
+  return converter.translate(questionInHtml);
 };

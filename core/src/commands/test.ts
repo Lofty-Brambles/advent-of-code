@@ -1,6 +1,6 @@
 import { Command, Option } from "clipanion";
 
-import { join } from "path";
+import { join, resolve } from "path";
 import { existsSync } from "fs";
 
 import { validateTime } from "../utils/actions";
@@ -21,12 +21,13 @@ export class Test extends Command {
 
   async execute() {
     const { year, day } = validateTime(this.date);
-
-    const solutionFile = join("./", year, day, FILENAMES.SOLUTION_FILE);
+    const currentPath = resolve("./");
+    const solutionFile = join(currentPath, year, day, FILENAMES.SOLUTION_FILE);
+    console.log(solutionFile);
     if (!existsSync(solutionFile))
       throw new Error(`The solution file does not exist for ${year}/${day}!`);
 
     const { testResults } = await import(solutionFile);
-    this.context.stdout.write(JSON.stringify(testResults, undefined, 2));
+    this.context.stdout.write(JSON.stringify(testResults, undefined, 2) + "\n");
   }
 }

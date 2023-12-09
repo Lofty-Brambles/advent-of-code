@@ -29,7 +29,8 @@ export class Get extends Command {
 
   async execute() {
     const { year, day, rawDay } = validateTime(this.date);
-    const store = kfs("./.config");
+    //@ts-ignore - no idea what on earth is happening here.
+    const store = kfs.default("./.config");
 
     const yearPath = join("./", year);
     const dayPath = join("./", year, day);
@@ -44,23 +45,25 @@ export class Get extends Command {
       throw new Error("The day's problem already exists.");
     await mkdir(dayPath);
 
-    const rawQuestionText = await getQuestion(year, rawDay);
+    const config = store[year];
+    const rawQuestionText = await getQuestion(year, rawDay, config.session);
     const question = processQuestion(rawQuestionText);
     await writeFile(join(dayPath, FILENAMES.PROMPT_FILE), question);
 
-    const configForYear = store[year];
-    const input = await getInput(year, rawDay, configForYear.session);
+    const input = await getInput(year, rawDay, config.session);
     await writeFile(join(dayPath, FILENAMES.INPUT_FILE), input);
 
     const toTemplate = join(dayPath, FILENAMES.SOLUTION_FILE);
     const fromTemplate = join(
       "./core/templates",
-      configForYear.language,
+      config.language,
       FILENAMES.SOLUTION_FILE
     );
     await cp(fromTemplate, toTemplate);
 
-    this.context.stdout.write(`[ x ] Done! Your question is at ${year}/${day}\n`);
+    this.context.stdout.write(
+      `[ x ] Done! Your question is at ${year}/${day}\n`
+    );
   }
 }
 

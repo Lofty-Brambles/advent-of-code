@@ -1,7 +1,7 @@
 import { Command, Option } from "clipanion";
 import kfs from "key-file-storage";
 
-import { join } from "path";
+import { join, resolve } from "path";
 import { existsSync } from "fs";
 import { writeFile } from "fs/promises";
 
@@ -23,10 +23,11 @@ export class Submit extends Command {
 
   async execute() {
     const { year, day, rawDay } = validateTime(this.date);
-    const store = kfs("./.config");
-    const config = await store[year];
+    //@ts-ignore - no idea what on earth is happening here.
+    const store = kfs.default("./.config");
+    const config = store[year];
 
-    const dayPath = join("./", year, day);
+    const dayPath = join(resolve("./"), year, day);
     const solutionFile = join(dayPath, FILENAMES.SOLUTION_FILE);
     if (!existsSync(solutionFile))
       throw new Error(`The solution file does not exist for ${year}/${day}!`);
@@ -39,31 +40,31 @@ export class Submit extends Command {
     else if (results.part1 !== undefined)
       resp = await sendCheck(year, rawDay, 1, results.part1, config.session);
     else {
-      this.context.stdout.write("[ o ] No solutions have been implemented!");
+      this.context.stdout.write("[ o ] No solutions have been implemented!\n");
       return;
     }
 
     if (resp.status === "FAIL")
-      this.context.stdout.write(`The part ${resp.level} solution is wrong.`);
+      this.context.stdout.write(`The part ${resp.level} solution is wrong.\n`);
     else if (resp.status === "RATE_LIMIT")
-      this.context.stdout.write("You are trying to submit too often!");
+      this.context.stdout.write("You are trying to submit too often!\n");
     else if (resp.status === "NOT_LOGGED")
-      this.context.stdout.write("Your session token has expired.");
+      this.context.stdout.write("Your session token has expired.\n");
     else if (resp.status === "COMPLETE")
-      this.context.stdout.write("You have already completed this question.");
+      this.context.stdout.write("You have already completed this question.\n");
     else if (resp.status === "UNKNOWN")
       throw new Error(`Something went wrong. Please see below.
 ${resp.response}`);
     else {
       if (resp.level === 2) {
-        this.context.stdout.write(`Day ${year}/${day} completed! ⭐⭐`);
+        this.context.stdout.write(`Day ${year}/${day} completed! ⭐⭐\n`);
         return;
       }
 
-      const rawQuestionText = await getQuestion(year, rawDay);
+      const rawQuestionText = await getQuestion(year, rawDay, config.session);
       const question = processQuestion(rawQuestionText);
       await writeFile(join(dayPath, FILENAMES.PROMPT_FILE), question);
-      this.context.stdout.write(`Part 1 of day ${year}/${day} is complete! ⭐`);
+      this.context.stdout.write(`Part 1, day ${year}/${day} is complete! ⭐\n`);
     }
   }
 }
@@ -93,7 +94,7 @@ const sendCheck = async (
     method: "POST",
     body: `level=${level}&answer=${answer}`,
     headers: {
-      cookie: key,
+      cookie: `session=${key}`,
       "content-type": "application/x-www-form-urlencoded",
     },
   };
