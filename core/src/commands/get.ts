@@ -29,7 +29,7 @@ export class Get extends Command {
 
   async execute() {
     const { year, day, rawDay } = validateTime(this.date);
-    const store = kfs("./");
+    const store = kfs("./.config");
 
     const yearPath = join("./", year);
     const dayPath = join("./", year, day);
@@ -37,25 +37,30 @@ export class Get extends Command {
     if (!existsSync(yearPath)) {
       await mkdir(yearPath);
       const setup: Record<string, string> = await prompts(questions);
-      store(year, setup);
+      store[year] = setup;
     }
 
     if (existsSync(dayPath))
       throw new Error("The day's problem already exists.");
+    await mkdir(dayPath);
 
     const rawQuestionText = await getQuestion(year, rawDay);
     const question = processQuestion(rawQuestionText);
     await writeFile(join(dayPath, FILENAMES.PROMPT_FILE), question);
 
-    const configForYear = await store(year);
+    const configForYear = store[year];
     const input = await getInput(year, rawDay, configForYear.session);
     await writeFile(join(dayPath, FILENAMES.INPUT_FILE), input);
 
-    const fromTemplate = join("./core/templates", configForYear.language);
     const toTemplate = join(dayPath, FILENAMES.SOLUTION_FILE);
+    const fromTemplate = join(
+      "./core/templates",
+      configForYear.language,
+      FILENAMES.SOLUTION_FILE
+    );
     await cp(fromTemplate, toTemplate);
 
-    this.context.stdout.write(`[ x ] Done! Your question is at ${year}/${day}`);
+    this.context.stdout.write(`[ x ] Done! Your question is at ${year}/${day}\n`);
   }
 }
 

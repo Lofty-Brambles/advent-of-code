@@ -1,5 +1,5 @@
 import { Command, Option } from "clipanion";
-import keyFileStorage from "key-file-storage";
+import kfs from "key-file-storage";
 
 import { join } from "path";
 import { existsSync } from "fs";
@@ -23,8 +23,8 @@ export class Submit extends Command {
 
   async execute() {
     const { year, day, rawDay } = validateTime(this.date);
-    const store = keyFileStorage("./");
-    const config = await store(year);
+    const store = kfs("./.config");
+    const config = await store[year];
 
     const dayPath = join("./", year, day);
     const solutionFile = join(dayPath, FILENAMES.SOLUTION_FILE);
