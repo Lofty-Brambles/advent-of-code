@@ -2,14 +2,16 @@
 import { Cli, Builtins, type CommandClass } from "clipanion";
 
 import { Get } from "./commands/get";
+import { Test } from "./commands/test";
+import { Submit } from "./commands/submit";
 
 const commands: CommandClass[] = [
   Builtins.VersionCommand,
   Builtins.HelpCommand,
   Get,
+  Test,
+  Submit,
   // Stats,
-  // Test,
-  // Submit,
 ];
 
 const [node, app, ...args] = process.argv;

@@ -1,5 +1,4 @@
 import { Command, Option } from "clipanion";
-import TurndownService from "turndown";
 import kfs from "key-file-storage";
 import prompts from "prompts";
 
@@ -7,8 +6,13 @@ import { join } from "path";
 import { existsSync } from "fs";
 import { cp, mkdir, writeFile } from "fs/promises";
 
-import { ARTICLE_REGEX, FILENAMES } from "../utils/constants";
-import { validateTime } from "../utils/actions";
+import { FILENAMES } from "../utils/constants";
+import {
+  getInput,
+  getQuestion,
+  processQuestion,
+  validateTime,
+} from "../utils/actions";
 
 export class Get extends Command {
   static paths = [["get"]];
@@ -77,31 +81,3 @@ const questions: prompts.PromptObject[] = [
 `,
   },
 ];
-
-const getQuestion = async (year: string, rawDay: string) => {
-  const URL = `https://adventofcode.com/${year}/day/${rawDay}`;
-  const response = await fetch(URL);
-  const responseText = await response.text();
-
-  if (response.status === 200) return responseText;
-  if (response.status === 404 && responseText.includes("before it unlocks!"))
-    throw new Error(`[ * ] | This puzzle has not unlocked yet.
-        It will unlock on Dec ${rawDay}, ${year} at midnight EST (UTC-5).`);
-
-  throw new Error("The question wasn't found - please try again.");
-};
-
-const getInput = async (year: string, rawDay: string, key: string) => {
-  const URL = `https://adventofcode.com/${year}/day/${rawDay}/input`;
-  const response = await fetch(URL, { headers: { cookie: `session=${key}` } });
-
-  if (response.status === 200) return response.text();
-  throw new Error("The puzzle wasn't found - please check your session token.");
-};
-
-const processQuestion = (contents: string) => {
-  const questionInHtml = contents.match(ARTICLE_REGEX)![0];
-  const turndown = new TurndownService();
-  return `---------------------------
-# ${turndown.turndown(questionInHtml).slice(1)}`;
-};
