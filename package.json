@@ -9,8 +9,7 @@
     "quick-script"
   ],
   "scripts": {
-    "init": "tsx core/src/bin.ts init",
-    "fetch": "tsx core/src/bin.ts fetch"
+    "get": "tsx core/src/bin.ts get"
   },
   "devDependencies": {
     "@types/node": "^20.10.2",

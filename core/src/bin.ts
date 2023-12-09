@@ -1,7 +1,23 @@
 #!/usr/bin/env node
-import { runExit } from "clipanion";
+import { Cli, Builtins, type CommandClass } from "clipanion";
 
-import { Init } from "./commands/init";
-import { Fetch } from "./commands/fetch";
+import { Get } from "./commands/get";
 
-runExit([Init, Fetch]);
+const commands: CommandClass[] = [
+  Builtins.VersionCommand,
+  Builtins.HelpCommand,
+  Get,
+  // Stats,
+  // Test,
+  // Submit,
+];
+
+const [node, app, ...args] = process.argv;
+
+const binaryLabel = "Advent of CLI";
+const binaryName = `${node} ${app}`;
+const binaryVersion = "1.0.0";
+
+const cli = new Cli({ binaryLabel, binaryName, binaryVersion });
+commands.forEach((command) => cli.register(command));
+cli.runExit(args);

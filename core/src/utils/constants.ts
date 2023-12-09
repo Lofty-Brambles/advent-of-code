@@ -1,15 +1,15 @@
 export const START_YEAR = 2015;
-export const CURRENT_YEAR = new Date().getFullYear();
+export const DEFAULT_YEAR = new Date().getFullYear();
+export const DEFAULT_DAY = new Date().getDate().toString();
 export const YEARS = Array.from(
-  { length: CURRENT_YEAR - START_YEAR + 1 },
-  (_, i) => CURRENT_YEAR - i
+  { length: DEFAULT_YEAR - START_YEAR + 1 },
+  (_, i) => DEFAULT_YEAR - i
 );
 
-export const README_FILE = "readme.md";
-export const CONFIG_FILE = ".config";
-export const LANGUAGE_FILE = ".language";
-export const INPUT_FILE = "input.txt";
-export const SOLUTION_FILE = "solution.ts";
-export const QUESTION_FILE = "question.md";
+export const ARTICLE_REGEX = /(?<=\<article.*\>).*(?=\<\/article\>)/ims;
 
-export const ARTICLE_REGEX = /(?<=\<article.*\>).*(?=\<\/article\>)/mis;
+export const FILENAMES = {
+  PROMPT_FILE: "question.md",
+  INPUT_FILE: "input.txt",
+  SOLUTION_FILE: "solution.ts",
+};
