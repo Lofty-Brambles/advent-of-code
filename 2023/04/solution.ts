@@ -27,10 +27,14 @@ class Card {
     return numberString.split(" ").filter((element) => element !== "");
   }
 
-  getScore() {
+  getWinCount() {
     const numberIsWinning = (number: number) =>
       this.#winningNumbers.includes(number);
-    const winningCount = this.#cardNumbers.filter(numberIsWinning).length;
+    return this.#cardNumbers.filter(numberIsWinning).length;
+  }
+
+  getScore() {
+    const winningCount = this.getWinCount();
     return winningCount !== 0 ? Math.pow(2, winningCount - 1) : 0;
   }
 }
@@ -47,7 +51,19 @@ const problem1 = (contents: string[]) => {
 };
 
 const problem2 = (contents: string[]) => {
-  return undefined;
+  const cardCounts = Array.from({ length: contents.length }, (_) => 1);
+  const cards = contents.map((line, index) => processLine(line, index));
+  cards.forEach((card) => {
+    const newCardIndices = Array.from(
+      { length: card.getWinCount() },
+      (_, index) => card.id + index
+    );
+
+    const cardCount = cardCounts[card.id - 1];
+    newCardIndices.forEach((index) => (cardCounts[index] += cardCount));
+  });
+
+  return cardCounts.reduce((sum, count) => count + sum, 0);
 };
 
 export const results = {
