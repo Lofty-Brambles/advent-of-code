@@ -50,9 +50,11 @@ const problem2 = (contents: string[]) => {
   const RANKS = "AKQT98765432J".split("");
   const tallyJToHighest = (cards: Record<string, number>) => {
     const Jcount = cards["J"];
-    delete cards["J"];
-    const maxCard = Object.keys(cards).sort((a, b) => cards[b] - cards[a])[0];
-    if (Jcount && maxCard) cards[maxCard] += Jcount;
+    if (Jcount !== 5) {
+      delete cards["J"];
+      const maxCard = Object.keys(cards).sort((a, b) => cards[b] - cards[a])[0];
+      if (Jcount && maxCard) cards[maxCard] += Jcount;
+    }
     return Object.values(cards);
   };
 
