@@ -24,7 +24,7 @@ export function memoize<T extends unknown[], U>(method: Method<T, U>) {
   };
 }
 
-const tally = (line: string, numbers: number[]): number => {
+const tally = memoize((line: string, numbers: number[]): number => {
   if (line.length === 0) return Number(numbers.length === 0);
 
   if (numbers.length === 0) return Number(!line.includes("#"));
@@ -43,7 +43,7 @@ const tally = (line: string, numbers: number[]): number => {
   return (
     tally(`#${line.slice(1)}`, numbers) + tally(`.${line.slice(1)}`, numbers)
   );
-};
+});
 
 const problem1 = (contents: string[]) => {
   return contents.reduce((sum, line) => {
@@ -53,12 +53,11 @@ const problem1 = (contents: string[]) => {
 };
 
 const problem2 = (contents: string[]) => {
-  const memoized = memoize(tally);
   return contents.reduce((sum, line) => {
     let [config, numbers] = line.split(" ");
     config = Array(5).fill(config).join("?");
     numbers = Array(5).fill(numbers).join(",");
-    return sum + memoized(config, numbers.split(",").map(Number));
+    return sum + tally(config, numbers.split(",").map(Number));
   }, 0);
 };
 
