@@ -82,21 +82,30 @@ const problem1 = (contents: string[]) => {
 };
 
 const problem2 = (contents: string[]) => {
-  let matrix = contents.map((line) => line.split(""));
+  const matrix = contents.map((line) => line.split(""));
+  const LOOPS = 1_000_000_000;
   const cache: string[] = [];
   const toString = (matrix: string[][]) =>
     matrix.map((line) => line.join("")).join("\n");
 
+  let loopData = { matrix, stopAt: -1, index: -1 };
   loopHandler({
-    exitFx: (index) => index < 1_000_000_000,
-    callback: () => {
+    exitFx: (index) => index < LOOPS,
+    callback: (index) => {
       cache.push(toString(matrix));
-      matrix = cycle(matrix);
-      console.log(matrix.map(v=>v.join("")).join("\n") + "\n");
+      loopData.matrix = cycle(loopData.matrix);
+      loopData.stopAt = index;
+      loopData.index = cache.findIndex(
+        (string) => string === toString(loopData.matrix),
+      );
     },
     breakFx: () => cache.includes(toString(matrix)),
   });
-  return getNorthLoad(matrix);
+
+  const remaining =
+    (LOOPS - loopData.stopAt - 1) % (loopData.stopAt - loopData.index);
+  Array(remaining).forEach((_) => (loopData.matrix = cycle(loopData.matrix)));
+  return getNorthLoad(loopData.matrix);
 };
 
 // export const results = {
