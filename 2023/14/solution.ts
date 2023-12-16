@@ -16,18 +16,6 @@ const rawInput = await readFile(inputFilePath, { encoding: "utf-8" });
 const input = rawInput.trim().split("\n");
 const test = rawTest.trim().split("\n");
 
-type FunctionalArgs = {
-  callback: (index: number) => unknown;
-  exitFx: (index: number) => boolean;
-  breakFx?: (index: number) => boolean;
-};
-const loopHandler = ({ callback, exitFx, breakFx }: FunctionalArgs) => {
-  for (let index = 0; exitFx(index); index++) {
-    if (breakFx && breakFx(index)) break;
-    callback(index);
-  }
-};
-
 type Type = "before" | "after";
 const splitMany = <T>(array: T[], condition: (x: T) => Boolean, type: Type) => {
   const tally = { result: [] as T[][], temp: [] as T[] };
@@ -89,22 +77,19 @@ const problem2 = (contents: string[]) => {
     matrix.map((line) => line.join("")).join("\n");
 
   let loopData = { matrix, stopAt: -1, index: -1 };
-  loopHandler({
-    exitFx: (index) => index < LOOPS,
-    callback: (index) => {
-      cache.push(toString(matrix));
-      loopData.matrix = cycle(loopData.matrix);
-      loopData.stopAt = index;
-      loopData.index = cache.findIndex(
-        (string) => string === toString(loopData.matrix),
-      );
-    },
-    breakFx: () => cache.includes(toString(matrix)),
-  });
+  for (let index = 0; index < LOOPS; index++) {
+    loopData.matrix = cycle(loopData.matrix);
+    const matrixString = toString(loopData.matrix);
+    loopData.index = cache.findIndex((map) => map === matrixString);
+    loopData.stopAt = index;
+    if (loopData.index !== -1) break;
+    cache.push(matrixString);
+  }
 
-  const remaining =
+  const rest =
     (LOOPS - loopData.stopAt - 1) % (loopData.stopAt - loopData.index);
-  Array(remaining).forEach((_) => (loopData.matrix = cycle(loopData.matrix)));
+    console.log(rest)
+  Array(rest).forEach((_) => (loopData.matrix = cycle(loopData.matrix)));
   return getNorthLoad(loopData.matrix);
 };
 
