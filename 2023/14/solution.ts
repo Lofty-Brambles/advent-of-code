@@ -75,6 +75,8 @@ const problem2 = (contents: string[]) => {
   const cache: string[] = [];
   const toString = (matrix: string[][]) =>
     matrix.map((line) => line.join("")).join("\n");
+  const fromString = (string: string) =>
+    string.split("\n").map((line) => line.split(""));
 
   let loopData = { matrix, stopAt: -1, index: -1 };
   for (let index = 0; index < LOOPS; index++) {
@@ -87,16 +89,15 @@ const problem2 = (contents: string[]) => {
   }
 
   const rest =
-    (LOOPS - loopData.stopAt - 1) % (loopData.stopAt - loopData.index);
-    console.log(rest)
-  Array(rest).forEach((_) => (loopData.matrix = cycle(loopData.matrix)));
-  return getNorthLoad(loopData.matrix);
+    ((LOOPS - loopData.index - 1) % (loopData.stopAt - loopData.index)) +
+    loopData.index;
+  return getNorthLoad(fromString(cache[rest]));
 };
 
-// export const results = {
-//   part1: problem1(input),
-//   part2: problem2(input),
-// };
+export const results = {
+  part1: problem1(input),
+  part2: problem2(input),
+};
 
 export const testResults = {
   part1: problem1(test),
