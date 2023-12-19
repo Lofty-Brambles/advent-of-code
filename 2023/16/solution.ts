@@ -59,25 +59,45 @@ const move = (map: Cell[][], [row, column]: number[], way: Direction) => {
   queue.forEach((nextItem) => move(map, ...nextItem));
 };
 
+const getVisited = (map: Cell[][]) =>
+  map.reduce((rowSum, row) => {
+    // prettier-ignore
+    return rowSum + row.reduce((cellSum, cell) => {
+      return cellSum + (cell.visited.length ? 1 : 0);
+    }, 0);
+  }, 0);
+
 const problem1 = (contents: string[]) => {
   const map = parser(contents);
   move(map, [0, 0], "right");
-  return map.reduce((rowSum, row) => {
-    // prettier-ignore
-    return rowSum + row.reduce((cellSum, cell) => {
-      return cellSum + Number(cell.visited.length);
-    }, 0);
-  }, 0);
+  return getVisited(map);
 };
 
 const problem2 = (contents: string[]) => {
-  return undefined;
+  let highest = 0;
+  const [MAX_ROW, MAX_COLUMN] = [contents.length, contents[0].length];
+  const assignHighest = (row?: number, columnn?: number) => {
+    const [map1, map2] = [0, 0].map(() => parser(contents));
+    if (row !== undefined) {
+      move(map1, [row, 0], "right");
+      move(map2, [row, MAX_ROW - 1], "left");
+    }
+    if (columnn !== undefined) {
+      move(map1, [0, columnn], "down");
+      move(map2, [MAX_COLUMN - 1, columnn], "up");
+    }
+    highest = Math.max(getVisited(map1), getVisited(map2), highest);
+  };
+
+  Array.from({ length: MAX_ROW - 1 }, (_, i) => assignHighest(i));
+  Array.from({ length: MAX_COLUMN - 1 }, (_, i) => assignHighest(undefined, i));
+  return highest;
 };
 
-// export const results = {
-//   part1: problem1(input),
-//   part2: problem2(input),
-// };
+export const results = {
+  part1: problem1(input),
+  part2: problem2(input),
+};
 
 export const testResults = {
   part1: problem1(test),
