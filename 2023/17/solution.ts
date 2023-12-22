@@ -19,95 +19,55 @@ const rawInput = await readFile(inputFilePath, { encoding: "utf-8" });
 const input = rawInput.trim().split("\n");
 const test = rawTest.trim().split("\n");
 
-type Block = [number, number];
-const addBlocks = (block1: Block, block2: Block) =>
-  [0, 1].map((id) => block1[id] + block2[id]) as Block;
-const multiplyby = (block: Block, number: number) =>
-  [0, 1].map((id) => block[id] * number) as Block;
-const equals = (block1: Block, block2: Block) =>
-  block1[0] === block2[0] && block1[1] === block2[1];
-const isValid =
-  ([MAX_ROW, MAX_COLUMN]: Block) =>
-  ([row, column]: Block) =>
-    row >= 0 && row <= MAX_ROW && column >= 0 && column <= MAX_COLUMN;
+// prettier-ignore
+const DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
-const MOVEMENTS: Record<string, Block> = {
-  up: [-1, 0],
-  down: [1, 0],
-  left: [0, -1],
-  right: [0, 1],
-};
+// https://stackoverflow.com/a/66511107/4235871
+// prettier-ignore
+// @ts-ignore
+const heap={siftDown(h,i=0,v=h[i]){if(i<h.length){let k=v[0];while(1){let j=i*2+1;if(j+1<h.length&&h[j][0]>h[j+1][0])j++;if(j>=h.length||k<=h[j][0])break;h[i]=h[j];i=j;}h[i]=v}},heapify(h){for(let i=h.length>>1;i--;)this.siftDown(h,i);return h},pop(h){return this.exchange(h,h.pop())},exchange(h,v){if(!h.length)return v;let w=h[0];this.siftDown(h,0,v);return w},push(h,v){let k=v[0],i=h.length,j;while((j=(i-1)>>1)>=0&&k<h[j][0]){h[i]=h[j];i=j}h[i]=v;return h}};
 
-const REVERSE: Record<string, Direction> = {
-  up: "down",
-  down: "up",
-  left: "right",
-  right: "left",
-};
-
-type Direction = "up" | "down" | "left" | "right" | "";
-type Node = { block: Block; from: Direction; heat: number };
-const dijkastra = (graph: number[][], minStep: number, maxStep: number) => {
-  const checked = new Set<string>();
-  const heats: Record<string, number> = {};
-  const heap = [] as Node[];
-  const addToHeap = (node: Node) => {
-    const index = heap.findIndex((value) => value.heat > node.heat);
-    index === -1 ? heap.push(node) : heap.splice(index, 0, node);
-  };
-
-  const target: Block = [graph.length - 1, graph[0].length - 1];
-  const validity = isValid(target);
-
-  const queueDistances = (current: Node, move: Block, from: string) => {
-    let heat = 0;
-    for (let distance = 1; distance <= maxStep; distance++) {
-      const newBlock = addBlocks(current.block, multiplyby(move, distance));
-      if (!validity(newBlock)) continue;
-
-      heat += graph[newBlock[0]][newBlock[1]];
-      if (distance < minStep) continue;
-
-      const newHeat = current.heat + heat;
-      const possible = { block: newBlock, from, heat: newHeat };
-      if (heats[`${current.block}-${current.from}`] <= newHeat) continue;
-
-      heats[`${current.block}-${current.from}`] = newHeat;
-      addToHeap(possible as Node);
+type Condition = (p: number, s: number) => boolean;
+const BFS = (condition: Condition) => (grid: number[][]) => {
+  const visited = new Map();
+  const hash = (x: number, y: number, h: number, s: number) =>
+    `${x}-${y}-${h}-${s}`;
+  const [tx, ty] = [grid[0].length - 1, grid.length - 1];
+  const queue = [1, 2].map((n) => [0, 0, [0, 0], n, 0]);
+  while (queue.length) {
+    const [, energy, [cx, cy], ch, cs] = heap.pop(queue);
+    if (cx === tx && cy === ty && condition(cs, cs)) {
+      return energy;
     }
-  };
-
-  const search = () => {
-    addToHeap({ block: [0, 0], from: "", heat: 0 });
-    while (true) {
-      const current = heap.pop()!;
-      if (equals(current.block, target)) return current.heat;
-      if (checked.has(`${current.block}-${current.from}`)) continue;
-      checked.add(`${current.block}-${current.from}`);
-
-      for (const [from, move] of Object.entries(MOVEMENTS)) {
-        if ([from, REVERSE[from]].includes(current.from)) continue;
-        queueDistances(current, move, from);
-      }
-    }
-  };
-
-  return { search };
+    DIR.map(([dx, dy], h) => [[cx + dx, cy + dy], h, h === ch ? cs + 1 : 1])
+      .filter(([[x, y], h]) => grid[y]?.[x] && (h + 2) % 4 !== ch)
+      .filter(([, , s]) => condition(cs, s))
+      .map(([[x, y], h, s]) => [energy + grid[y][x], [x, y], h, s])
+      .filter(
+        ([e, [x, y], h, s]) =>
+          (visited.get(hash(x, y, h, s)) ?? Infinity) > e &&
+          visited.set(hash(x, y, h, s), e),
+      )
+      .forEach(([e, p, h, s]) =>
+        heap.push(queue, [e + (tx - p[0]) + (ty - p[1]), e, p, h, s]),
+      );
+  }
 };
 
 const problem1 = (contents: string[]) => {
   const graph = contents.map((line) => line.split("").map(Number));
-  return dijkastra(graph, 1, 3).search();
+  return BFS((_, s) => s < 4)(graph);
 };
 
 const problem2 = (contents: string[]) => {
-  return undefined;
+  const graph = contents.map((line) => line.split("").map(Number));
+  return BFS((p, s) => (s > p || p >= 4) && s < 11)(graph);
 };
 
-// export const results = {
-//   part1: problem1(input),
-//   part2: problem2(input),
-// };
+export const results = {
+  part1: problem1(input),
+  part2: problem2(input),
+};
 
 export const testResults = {
   part1: problem1(test),
